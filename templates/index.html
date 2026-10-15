@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ArthaFlow | Economy Data Pipeline</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="logo"><span class="logo-icon">A</span><span>ArthaFlow<small>DATA INTELLIGENCE</small></span></div>
+    <div class="side-label">WORKSPACE</div>
+    <a class="nav active" href="/"><span>▦</span> Pipeline overview</a>
+    <a class="nav" href="#quality"><span>◈</span> Data quality</a>
+    <a class="nav" href="#records"><span>▤</span> Clean records</a>
+    <div class="sidebar-bottom"><div class="live-dot"></div><div><strong>Local pipeline</strong><small>SQLite · Flask · pandas</small></div></div>
+  </aside>
+  <main class="main">
+    <header class="topbar"><div><div class="crumb">Workspace <span>/</span> Data pipelines</div><h1>Economy data pipeline</h1><p>Ingest, clean, validate and explore sample economic indicators across India.</p></div><div class="top-actions"><span class="env-tag"><i></i> LOCAL ENVIRONMENT</span><button id="runButton" class="run-btn" onclick="runPipeline()">▶ &nbsp; Run pipeline</button></div></header>
+    <section class="notice"><div class="notice-icon">i</div><div><strong>Demo dataset</strong><p>This project ships with a small, synthetic sample dataset for demonstration. Values are illustrative and are not official economic statistics.</p></div></section>
+    <section class="metrics">
+      <div class="metric-card"><div class="metric-top"><span>Clean records</span><span class="metric-icon violet">▤</span></div><strong>{{ data.total }}</strong><small><b class="positive">↑</b> Rows in analytical table</small></div>
+      <div class="metric-card"><div class="metric-top"><span>States / UTs</span><span class="metric-icon blue">⌖</span></div><strong>{{ data.states }}</strong><small>Distinct regions represented</small></div>
+      <div class="metric-card"><div class="metric-top"><span>Economic sectors</span><span class="metric-icon green">◫</span></div><strong>{{ data.sectors }}</strong><small>Agriculture, services, industry</small></div>
+      <div class="metric-card"><div class="metric-top"><span>Latest run</span><span class="metric-icon orange">↻</span></div><strong class="run-status">{% if data.last_run %}{{ data.last_run.status }}{% else %}Pending{% endif %}</strong><small>{% if data.last_run %}{{ data.last_run.run_at }}{% else %}No runs yet{% endif %}</small></div>
+    </section>
+    <section class="charts-grid">
+      <div class="card chart-card"><div class="card-heading"><div><h2>Average indicator by sector</h2><p>Mean value across validated records</p></div><span class="chart-tag">SECTOR VIEW</span></div><div class="chart-wrap"><canvas id="sectorChart"></canvas></div></div>
+      <div class="card chart-card"><div class="card-heading"><div><h2>Monthly trend</h2><p>Average indicator value over time</p></div><span class="chart-tag">MONTHLY</span></div><div class="chart-wrap"><canvas id="monthChart"></canvas></div></div>
+    </section>
+    <section class="quality-grid" id="quality">
+      <div class="card quality-card"><div class="card-heading"><div><h2>Data quality checks</h2><p>Applied during the ETL process</p></div><span class="quality-status">✓ ACTIVE</span></div>
+        <div class="check-row"><span class="check-icon">✓</span><div><strong>Required fields</strong><small>State, sector, month, metric and source present</small></div><span class="check-result">Validated</span></div>
+        <div class="check-row"><span class="check-icon">✓</span><div><strong>Numeric validation</strong><small>Values converted to numeric; invalid and negative values rejected</small></div><span class="check-result">Validated</span></div>
+        <div class="check-row"><span class="check-icon">✓</span><div><strong>Month format</strong><small>Requires YYYY-MM and a valid month</small></div><span class="check-result">Validated</span></div>
+        <div class="check-row"><span class="check-icon">✓</span><div><strong>Deduplication</strong><small>One record per state, sector, month and metric</small></div><span class="check-result">Applied</span></div>
+      </div>
+      <div class="card run-card"><div class="card-heading"><div><h2>Latest pipeline run</h2><p>Most recent ETL summary</p></div><span class="run-symbol">↗</span></div>
+        {% if data.last_run %}{% set summary = data.last_run.summary|tojson %}{% endif %}
+        <div id="runSummary" class="run-summary">
+          {% if data.last_run %}
+          <div class="summary-line"><span>Source rows</span><strong>{{ data.last_run.source_rows }}</strong></div>
+          <div class="summary-line"><span>Clean rows</span><strong>{{ data.last_run.clean_rows }}</strong></div>
+          <div class="summary-line"><span>Rejected / duplicate rows</span><strong class="rejected">{{ data.last_run.rejected_rows }}</strong></div>
+          <div class="summary-line"><span>Run status</span><strong class="success-text">{{ data.last_run.status }}</strong></div>
+          {% else %}<p>No pipeline runs yet.</p>{% endif %}
+        </div>
+        <div id="runMessage" class="run-message" aria-live="polite"></div>
+      </div>
+    </section>
+    <section class="card table-card" id="records"><div class="card-heading"><div><h2>Clean analytical records</h2><p>Validated records stored in SQLite</p></div><div class="table-tools"><input id="recordSearch" placeholder="Search state, sector..." oninput="filterRecords()"><a href="/api/records" target="_blank">View API ↗</a></div></div>
+      <div class="table-scroll"><table id="recordsTable"><thead><tr><th>REGION</th><th>SECTOR</th><th>MONTH</th><th>METRIC</th><th>VALUE</th><th>SOURCE</th></tr></thead><tbody>
+      {% for row in data.records %}<tr><td><strong>{{ row.state }}</strong></td><td><span class="sector-chip">{{ row.sector }}</span></td><td>{{ row.month }}</td><td>{{ row.metric }}</td><td class="value-cell">{{ "%.2f"|format(row.value) }}</td><td><span class="source-dot"></span>{{ row.source }}</td></tr>{% endfor %}
+      </tbody></table></div><div class="table-footer">Showing up to 100 records <span>Data served by Flask REST endpoint</span></div>
+    </section>
+    <footer>ArthaFlow · Python data engineering portfolio project <span>Built with Flask, pandas and SQLite</span></footer>
+  </main>
+</div>
+<script>
+const sectorData = {{ data.sector_rows|tojson }};
+const monthData = {{ data.month_rows|tojson }};
+Chart.defaults.font.family = "'DM Sans', Arial, sans-serif";
+Chart.defaults.color = "#8a91a4";
+new Chart(document.getElementById('sectorChart'), {
+  type:'bar',
+  data:{labels:sectorData.map(x=>x.sector),datasets:[{label:'Average value',data:sectorData.map(x=>x.avg_value),backgroundColor:['#7868e8','#5d9eea','#49bfa2','#f0ad62'],borderRadius:6,maxBarThickness:34}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:'#f0f1f6'},border:{display:false},ticks:{font:{size:10}}}}}
+});
+new Chart(document.getElementById('monthChart'), {
+  type:'line',
+  data:{labels:monthData.map(x=>x.month),datasets:[{label:'Average value',data:monthData.map(x=>x.avg_value),borderColor:'#7664e8',backgroundColor:'rgba(118,100,232,.12)',fill:true,tension:.35,pointRadius:3,pointBackgroundColor:'#7664e8',borderWidth:2}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:'#f0f1f6'},border:{display:false},ticks:{font:{size:10}}}}}
+});
+async function runPipeline(){
+  const btn=document.getElementById('runButton'), msg=document.getElementById('runMessage');
+  btn.disabled=true;btn.textContent='Running pipeline...';msg.className='run-message';msg.textContent='Reading CSV, validating rows, deduplicating and loading SQLite...';
+  try{
+    const response=await fetch('/run-pipeline',{method:'POST'});
+    const result=await response.json();
+    if(!response.ok||!result.ok) throw new Error(result.message||'Pipeline failed');
+    const s=result.summary;
+    document.getElementById('runSummary').innerHTML=`<div class="summary-line"><span>Source rows</span><strong>${s.source_rows}</strong></div><div class="summary-line"><span>Clean rows</span><strong>${s.clean_rows}</strong></div><div class="summary-line"><span>Rejected / duplicate rows</span><strong class="rejected">${s.rejected_rows}</strong></div><div class="summary-line"><span>Run status</span><strong class="success-text">Success</strong></div>`;
+    msg.className='run-message success-message';msg.textContent=`Pipeline succeeded: ${s.clean_rows} clean rows loaded. Refreshing dashboard...`;
+    setTimeout(()=>location.reload(),800);
+  }catch(e){msg.className='run-message error-message';msg.textContent='Pipeline failed: '+e.message;}
+  finally{btn.disabled=false;btn.innerHTML='▶ &nbsp; Run pipeline';}
+}
+function filterRecords(){
+ const q=document.getElementById('recordSearch').value.toLowerCase();
+ document.querySelectorAll('#recordsTable tbody tr').forEach(row=>{row.style.display=row.innerText.toLowerCase().includes(q)?'':'none';});
+}
+</script>
+</body></html>

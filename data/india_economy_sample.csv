@@ -1,0 +1,34 @@
+state,sector,month,metric,value,source
+Madhya Pradesh,Agriculture,2026-01,Production Index,108.4,Sample dataset
+Maharashtra,Manufacturing,2026-01,Production Index,121.7,Sample dataset
+Karnataka,Technology,2026-01,Employment Index,134.2,Sample dataset
+Tamil Nadu,Manufacturing,2026-01,Production Index,117.9,Sample dataset
+Gujarat,Manufacturing,2026-01,Export Index,126.5,Sample dataset
+Rajasthan,Agriculture,2026-02,Production Index,103.8,Sample dataset
+Uttar Pradesh,Agriculture,2026-02,Production Index,111.2,Sample dataset
+Telangana,Technology,2026-02,Employment Index,129.6,Sample dataset
+Delhi,Services,2026-02,Business Activity Index,132.1,Sample dataset
+Kerala,Services,2026-02,Business Activity Index,109.7,Sample dataset
+Punjab,Agriculture,2026-03,Production Index,106.1,Sample dataset
+Haryana,Manufacturing,2026-03,Production Index,114.4,Sample dataset
+West Bengal,Services,2026-03,Business Activity Index,105.9,Sample dataset
+Andhra Pradesh,Manufacturing,2026-03,Export Index,118.3,Sample dataset
+Odisha,Manufacturing,2026-03,Production Index,112.6,Sample dataset
+Bihar,Agriculture,2026-03,Production Index,99.4,Sample dataset
+Assam,Agriculture,2026-04,Production Index,102.8,Sample dataset
+Goa,Services,2026-04,Business Activity Index,124.1,Sample dataset
+Chhattisgarh,Manufacturing,2026-04,Production Index,110.7,Sample dataset
+Jharkhand,Manufacturing,2026-04,Export Index,107.6,Sample dataset
+Himachal Pradesh,Services,2026-04,Business Activity Index,115.8,Sample dataset
+Uttarakhand,Manufacturing,2026-05,Production Index,119.3,Sample dataset
+Sikkim,Services,2026-05,Business Activity Index,121.4,Sample dataset
+Tripura,Agriculture,2026-05,Production Index,101.7,Sample dataset
+Meghalaya,Agriculture,2026-05,Production Index,104.2,Sample dataset
+Manipur,Services,2026-06,Business Activity Index,98.6,Sample dataset
+Mizoram,Agriculture,2026-06,Production Index,100.9,Sample dataset
+Nagaland,Agriculture,2026-06,Production Index,102.1,Sample dataset
+Arunachal Pradesh,Agriculture,2026-06,Production Index,103.4,Sample dataset
+Jammu and Kashmir,Services,2026-06,Business Activity Index,111.9,Sample dataset
+Maharashtra,Manufacturing,2026-01,Production Index,121.7,Sample dataset
+Karnataka,Technology,2026-02,Employment Index,-4.0,Sample dataset
+Unknown,Services,not-a-month,Business Activity Index,,Sample dataset
