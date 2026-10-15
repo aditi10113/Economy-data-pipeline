@@ -1,13 +1,14 @@
 from flask import Flask, render_template, request, jsonify
 from pathlib import Path
 import sqlite3
+import os
 import pandas as pd
 import json
 from datetime import datetime
 
 ROOT = Path(__file__).resolve().parent
 DATA_DIR = ROOT / "data"
-DB_PATH = ROOT / "pipeline.db"
+DB_PATH = Path("/tmp/pipeline.db") if os.environ.get("VERCEL") else ROOT / "pipeline.db"
 CSV_PATH = DATA_DIR / "india_economy_sample.csv"
 
 app = Flask(__name__)
